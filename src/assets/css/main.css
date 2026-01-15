@@ -1,0 +1,48 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.color-year {
+    font-weight: bold;
+}
+
+td {
+    position: relative;
+}
+
+
+.text-Extra,
+.text-Descontar {
+    font-size: 10px !important;
+    position: absolute;
+    right: -5px;
+}
+.text-Extra{
+    color: #4caf4fcb;
+    top: -1px;
+}
+.text-Descontar{
+    color: #f44336cb;
+    bottom: -1px;
+}
+.disabled {
+    display: none;
+}
+
+p,
+strong,
+small,
+td,
+tbody,
+span {
+    word-break: break-all;
+}
+
+span {
+   min-width: 140px;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+}
