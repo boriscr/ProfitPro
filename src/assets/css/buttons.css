@@ -9,17 +9,32 @@
   border-radius: 15px;
 }
 
+.theme-btn {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  border: 1px solid #97979788;
+  background-color: transparent;
+}
+
 .colorDefault {
   /* Green */
-  border: 1px solid #4CAF50;
-  background-color: #ffffff;
+  background-color: transparent;
   color: #4CAF50;
+  border: none;
+  border-radius: 25px;
+  width: 100px;
 }
 
 .colorActive {
   background-color: #4CAF50;
   border: none;
   color: white;
+  border-radius: 25px;
+  width: 130px;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .colorBtnPrimary {
@@ -27,3 +42,10 @@
   color: white;
   width: 100%;
 }
+
+/*
+@media (prefers-color-scheme: dark) {
+  .colorActive {
+    background-color: transparent;
+  }
+}*/

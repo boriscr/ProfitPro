@@ -1,5 +1,10 @@
 <script setup>
 import { ref, computed, nextTick } from 'vue'
+import { useTheme } from './assets/js/themeHandler'; // Ajusta la ruta según tu carpeta
+import { useLanguage } from './assets/js/useLanguage';
+
+const { t, toggleLanguage, currentLocale } = useLanguage();
+const { theme, toggleTheme } = useTheme();
 
 const opcionSeleccionada = ref("Plazo Fijo")
 const montoPlazoFijo = ref(0)
@@ -28,26 +33,35 @@ const datosCalculadosFCI = ref({
   totalIntereses: 0
 })
 
+// Para los textos y resultados (con 2 decimales)
 const formatear = (valor) => {
-  return new Intl.NumberFormat('es-AR').format(valor)
+  if (valor === null || valor === undefined || valor === "") return "";
+  const locale = currentLocale.value === 'es' ? 'es-AR' : 'en-US';
+  return new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(valor);
+};
+
+// NUEVA: Para los inputs mientras se escribe (SIN decimales)
+const formatearParaInput = (valor) => {
+  if (!valor && valor !== 0) return "";
+  const locale = currentLocale.value === 'es' ? 'es-AR' : 'en-US';
+  return new Intl.NumberFormat(locale, {
+    maximumFractionDigits: 0
+  }).format(valor);
+};
+
+// Modificación de los handlers de input para permitir borrar
+const formatearInputGenerico = (e, refVar) => {
+  let val = e.target.value.replace(/\D/g, ""); // Solo números
+  refVar.value = val ? parseInt(val) : ""; // Si borra todo, dejamos string vacío
 }
-//Formatear inputs
-const formatearInput = (e) => {
-  let val = e.target.value.replace(/\D/g, "")
-  montoPlazoFijo.value = val ? parseInt(val) : 0
-}
-const formatearInputExtra = (e) => {
-  let val = e.target.value.replace(/\D/g, "")
-  montoExtra.value = val ? parseInt(val) : 0
-}
-const formatearInputDescontar = (e) => {
-  let val = e.target.value.replace(/\D/g, "")
-  montoDescontar.value = val ? parseInt(val) : 0
-}
-const formatearInputFCI = (e) => {
-  let val = e.target.value.replace(/\D/g, "")
-  montoFCI.value = val ? parseInt(val) : 0
-}
+// Actualiza tus funciones existentes llamando a la genérica
+const formatearInput = (e) => formatearInputGenerico(e, montoPlazoFijo)
+const formatearInputExtra = (e) => formatearInputGenerico(e, montoExtra)
+const formatearInputDescontar = (e) => formatearInputGenerico(e, montoDescontar)
+const formatearInputFCI = (e) => formatearInputGenerico(e, montoFCI)
 
 const calcularPlazoFijo = async () => {
   resultadosTabla.value = []
@@ -166,91 +180,109 @@ const montoFinalFCI = computed(() => {
 </script>
 
 <template>
+  <section class="containerBtns">
+    <button @click="toggleTheme" class="theme-btn">
+      {{ theme === 'light' ? t('modoOscuro') : t('modoClaro') }}
+    </button>
+    <button @click="toggleLanguage" class="theme-btn btn-lang">
+      {{ t('bandera') }}
+      <span>{{ currentLocale === 'es' ? 'ES' : 'EN' }}</span>
+    </button>
+  </section>
   <hr>
   <br>
   <section class="containerBtns">
-    <input type="button" value="Plazo Fijo" @click="opcionSeleccionada = 'Plazo Fijo'"
-      :class="opcionSeleccionada === 'Plazo Fijo' ? 'colorActive' : 'colorDefault'">
-    <input type="button" value="FCI" @click="opcionSeleccionada = 'FCI'"
-      :class="opcionSeleccionada === 'FCI' ? 'colorActive' : 'colorDefault'">
-  </section>
-
-  <section v-if="opcionSeleccionada" class="containerTitles text-center mt-4">
-    <p class="h3">Has seleccionado: <b>{{ opcionSeleccionada }}</b></p>
+    <div class="subContainerBtns">
+      <input type="button" :value="t('plazoFijo')" @click="opcionSeleccionada = 'Plazo Fijo'"
+        :class="opcionSeleccionada === 'Plazo Fijo' ? 'colorActive' : 'colorDefault'">
+      <input type="button" :value="t('fci')" @click="opcionSeleccionada = 'FCI'"
+        :class="opcionSeleccionada === 'FCI' ? 'colorActive' : 'colorDefault'">
+    </div>
   </section>
 
   <!-- Seccion Plazo Fijo-->
   <section v-if="opcionSeleccionada === 'Plazo Fijo'" class="containerInputs text-center mt-4">
-    <label>Monto:</label>
+    <label>{{ t('monto') }}</label>
     <div class="item">
       <i class="bi bi-currency-dollar"></i>
-      <input type="text" inputmode="numeric" placeholder="Ingrese el monto" :value="formatear(montoPlazoFijo)" @input="formatearInput">
+      <input type="text" inputmode="numeric" :placeholder="t('placeholderMonto')"
+        :value="formatearParaInput(montoPlazoFijo)" @input="formatearInput">
     </div>
-
-    <label>Plazo (Meses):</label>
-    <div class="item">
-      <i class="bi bi-calendar"></i>
-      <input type="number" v-model.number="plazoPlazoFijo">
+    <div class="item-input-container">
+      <div class="subContainerInputs">
+        <label>{{ t('plazo') }}</label>
+        <div class="item">
+          <i class="bi bi-calendar"></i>
+          <input type="number" :placeholder="t('placeholderEjMeses')" v-model.number="plazoPlazoFijo">
+        </div>
+      </div>
+      <div class="subContainerInputs">
+        <label>{{ t('interesAnual') }}</label>
+        <div class="item">
+          <i class="bi bi-percent"></i>
+          <input type="number" :placeholder="t('placeholderEjInteres')" v-model.number="interesPlazoFijo">
+        </div>
+      </div>
     </div>
-
-    <label>Interés (Anual %):</label>
-    <div class="item">
-      <i class="bi bi-percent"></i>
-      <input type="number" v-model.number="interesPlazoFijo">
-    </div>
-
-    <label>Monto Extra (Al finalizar el plazo):</label>
-    <div class="item">
-      <i class="bi bi-currency-dollar"></i>
-      <input type="text" inputmode="numeric" placeholder="Ingrese el monto extra" :value="formatear(montoExtra)"
-        @input="formatearInputExtra">
-    </div>
-
-    <label>Monto a Descontar (Al finalizar el plazo):</label>
+    <label>{{ t('montoExtra') }}</label>
     <div class="item">
       <i class="bi bi-currency-dollar"></i>
-      <input type="text" inputmode="numeric" placeholder="Ingrese el monto a descontar" :value="formatear(montoDescontar)"
-        @input="formatearInputDescontar">
+      <input type="text" inputmode="numeric" :placeholder="t('placeholderExtra')"
+        :value="formatearParaInput(montoExtra)" @input="formatearInputExtra">
     </div>
 
-    <button type="button" @click="calcularPlazoFijo" class="colorBtnPrimary">Calcular</button>
+    <label>{{ t('montoDescontar') }}</label>
+    <div class="item">
+      <i class="bi bi-currency-dollar"></i>
+      <input type="text" inputmode="numeric" :placeholder="t('placeholderDescontar')"
+        :value="formatearParaInput(montoDescontar)" @input="formatearInputDescontar">
+    </div>
+
+    <button type="button" @click="calcularPlazoFijo" class="colorBtnPrimary">{{ t('calcular') }}</button>
   </section>
 
   <!--Seccion FCI-->
   <section v-if="opcionSeleccionada === 'FCI'" class="containerInputs text-center mt-4">
-    <label>Monto:</label>
+    <label>{{ t('monto') }}</label>
     <div class="item">
       <i class="bi bi-currency-dollar"></i>
-      <input type="text" inputmode="numeric" placeholder="Ingrese el monto" :value="formatear(montoFCI)" @input="formatearInputFCI">
+      <input type="text" inputmode="numeric" :placeholder="t('placeholderMonto')" :value="formatearParaInput(montoFCI)"
+        @input="formatearInputFCI">
     </div>
-
-    <label>Plazo (Días):</label>
-    <div class="item">
-      <i class="bi bi-calendar"></i>
-      <input type="number" v-model.number="plazoFCI" placeholder="Ej: 30">
+    <div class="item-input-container">
+      <div class="subContainerInputs">
+        <label>{{ t('plazoDias') }}</label>
+        <div class="item">
+          <i class="bi bi-calendar"></i>
+          <input type="number" v-model.number="plazoFCI" :placeholder="t('placeholderEjDias')">
+        </div>
+      </div>
+      <div class="subContainerInputs">
+        <label>{{ t('interesAnual') }}</label>
+        <div class="item">
+          <i class="bi bi-percent"></i>
+          <input type="number" v-model.number="interesFCI" :placeholder="t('placeholderEjInteres')">
+        </div>
+      </div>
     </div>
-
-    <label>Interés Estimado (Anual %):</label>
-    <div class="item">
-      <i class="bi bi-percent"></i>
-      <input type="number" v-model.number="interesFCI" placeholder="Ej: 80">
-    </div>
-
-    <button type="button" @click="calcularFCI" class="colorBtnPrimary">Calcular FCI</button>
+    <button type="button" @click="calcularFCI" class="colorBtnPrimary">{{ t('calcular') }}</button>
   </section>
 
   <!--Graficos de comparacion-->
   <section v-if="ambosCalculados" class="containerCompare mt-5 px-3">
     <div class="card-ios">
-      <h3 class="title-ios">Comparativa de Rendimientos</h3>
+      <h3 class="title-ios">{{ t('comparativa') }}</h3>
       <p class="subtitle-ios text-center">
-        El <strong>{{ ganador }}</strong> te rinde <span class="text-success">$ {{ formatear(diferencia.toFixed(2)) }}</span> más.
+        {{ t('el') }} <strong>{{ ganador === 'Plazo Fijo' ? t('plazoFijo') : t('fci') }}</strong>
+        {{ t('teRinde') }}
+        <span class="text-success">$ {{ formatear(diferencia) }}</span>
+        {{ t('mas') }}
       </p>
 
       <div class="chart-container mt-4">
         <div class="chart-item">
           <div class="d-flex justify-content-between mb-1">
-            <span class="label-chart">Plazo Fijo</span>
+            <span class="label-chart">{{ t('plazoFijo') }}</span>
             <span class="value-chart">$ {{ formatear(datosCalculados.totalIntereses.toFixed(2)) }}</span>
           </div>
           <div class="progress-ios">
@@ -260,7 +292,7 @@ const montoFinalFCI = computed(() => {
 
         <div class="chart-item mt-3">
           <div class="d-flex justify-content-between mb-1">
-            <span class="label-chart">FCI</span>
+            <span class="label-chart">{{ t('fci') }}</span>
             <span class="value-chart">$ {{ formatear(datosCalculadosFCI.totalIntereses.toFixed(2)) }}</span>
           </div>
           <div class="progress-ios">
@@ -274,13 +306,13 @@ const montoFinalFCI = computed(() => {
   <!-- Resultado Plazo Fijo -->
   <section v-if="opcionSeleccionada === 'Plazo Fijo' && resultadosTabla.length > 0" ref="tablaRef" class="mt-4">
     <div class="containerTable">
-      <h4 class="text-primary">Evolución Mensual (Plazo Fijo)</h4>
-      <table class="table">
+      <h4 class="title-ios">{{ t('evolucionMensual') }}</h4>
+      <table class="table" id="table-color">
         <thead>
           <tr>
-            <th>Mes</th>
-            <th>Interés Ganado</th>
-            <th>{{ datosCalculados.montoDescontar > 0 ? 'Subtotal Restante' : 'Subtotal Acumulado' }}</th>
+            <th>{{ t('mes') }}</th>
+            <th>{{ t('interesGanado') }}</th>
+            <th>{{ datosCalculados.montoDescontar > 0 ? t('subtotalRestante') : t('subtotalAcumulado') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -301,65 +333,65 @@ const montoFinalFCI = computed(() => {
       </table>
       <div class="containerTotal alert mt-3">
         <div class="subContainerTotal">
-          <p>Intereses:</p>
+          <p>{{ t('intereses') }}</p>
           <p>$ {{ formatear(datosCalculados.totalIntereses.toFixed(2)) }}</p>
         </div>
         <div class="subContainerTotal">
-          <p>Monto Final:</p>
+          <p>{{ t('montoFinal') }}</p>
           <p>$ {{ formatear(montoFinalTotal.toFixed(2)) }}</p>
         </div>
       </div>
     </div>
 
-    <div class="containerTotalDetails alert alert-info mt-3 text-start">
-      <h5 class="border-bottom pb-2">Resumen de la Inversión</h5>
+    <div class="containerTotalDetails alert mt-3 text-start">
+      <h5 class="border-bottom pb-2">{{ t('resumen') }}</h5>
       <div class="d-flex justify-content-between">
-        <span>Capital Inicial:</span>
+        <span>{{ t('capitalInicial') }}</span>
         <strong>$ {{ formatear(datosCalculados.montoInicial.toFixed(2)) }}</strong>
       </div>
 
       <div v-if="datosCalculados.totalInvertidoExtra > 0" class="d-flex justify-content-between text-success">
-        <span>Total Aportes Extra:</span>
+        <span>{{ t('totalAportes') }}</span>
         <strong>+ $ {{ formatear(datosCalculados.totalInvertidoExtra.toFixed(2)) }}</strong>
       </div>
 
       <div v-if="datosCalculados.totalDescontado > 0" class="d-flex justify-content-between text-danger">
-        <span>Total Descontado:</span>
+        <span>{{ t('totalDescontado') }}</span>
         <strong>- $ {{ formatear(datosCalculados.totalDescontado.toFixed(2)) }}</strong>
       </div>
 
       <div v-if="datosCalculados.totalIntereses > 0" class="d-flex justify-content-between text-success">
         <span>
           <span>
-            <span>Intereses Ganados</span>
+            <span>{{ t('gananciaPura1') }}</span>
             <br>
-            <span>(Ganancia Pura):</span>
+            <span>{{ t('gananciaPura2') }}</span>
           </span>
         </span>
         <strong>+ $ {{ formatear(datosCalculados.totalIntereses.toFixed(2)) }}</strong>
       </div>
       <div v-if="datosCalculados.totalIntereses < 0" class="d-flex justify-content-between text-danger">
-        <span>Intereses Perdidos:</span>
+        <span>{{ t('interesesPerdidos') }}</span>
         <strong>- $ {{ formatear(datosCalculados.totalIntereses.toFixed(2)) }}</strong>
       </div>
       <hr>
 
       <div v-if="datosCalculados.totalInvertidoExtra > 0" class="d-flex justify-content-between">
         <span>
-          <span>Monto Final</span>
+          <span>{{ t('montoSinAportes1') }}</span>
           <br>
-          <span>(Sin aportes extra):</span>
+          <span>{{ t('montoSinAportes2') }}</span>
         </span>
         <strong>$ {{ formatear((montoFinalTotal - datosCalculados.totalInvertidoExtra).toFixed(2)) }}</strong>
       </div>
 
-      <div class="d-flex justify-content-between h4 mt-2 p-2 bg-white rounded shadow-sm">
-        <span>TOTAL:</span>
+      <div class="containerTotalResumen d-flex justify-content-between h4 mt-2 p-2 rounded shadow-sm">
+        <span>{{ t('total') }}</span>
         <strong class="text-primary">$ {{ formatear(montoFinalTotal.toFixed(2)) }}</strong>
       </div>
 
-      <p class="small text-muted mt-2">
-        * El interés de los Plazos Fijos es constante durante todo el plazo.
+      <p class="small mt-2">
+        {{ t('nota1') }}
       </p>
     </div>
   </section>
@@ -367,18 +399,18 @@ const montoFinalFCI = computed(() => {
   <!-- Resultado FCI -->
   <section v-if="opcionSeleccionada === 'FCI' && resultadosTablaFCI.length > 0" ref="tablaFCIRef" class="mt-4">
     <div class="containerTable">
-      <h4 class="text-primary">Evolución Diaria (FCI)</h4>
-      <table class="table">
+      <h4 class="title-ios">{{ t('evolucionDiaria') }}</h4>
+      <table class="table" id="table-color">
         <thead>
           <tr>
-            <th>Día</th>
-            <th>Ganancia Hoy</th>
-            <th>Total</th>
+            <th>{{ t('dia') }}</th>
+            <th>{{ t('gananciaHoy') }}</th>
+            <th>{{ t('subtotalAcumulado') }}</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(item, index) in resultadosTablaFCI" :key="index">
-            <td>Día {{ item.dia }}</td>
+            <td>{{ item.dia }}</td>
             <td class="text-success">+$ {{ formatear(item.interes) }}</td>
             <td>$ {{ formatear(item.total) }}</td>
           </tr>
@@ -386,42 +418,34 @@ const montoFinalFCI = computed(() => {
       </table>
       <div class="containerTotal alert mt-3">
         <div class="subContainerTotal">
-          <p>Intereses:</p>
+          <p>{{ t('intereses') }}</p>
           <p>$ {{ formatear(datosCalculadosFCI.totalIntereses.toFixed(2)) }}</p>
         </div>
         <div class="subContainerTotal">
-          <p>Monto Final:</p>
+          <p>{{ t('montoFinal') }}</p>
           <p>$ {{ formatear(montoFinalFCI.toFixed(2)) }}</p>
         </div>
       </div>
     </div>
-    <div class="containerTotalDetails alert alert-info mt-3 text-start">
+    <div class="containerTotalDetails alert mt-3 text-start">
       <h5 class="border-bottom pb-2">Resumen FCI</h5>
       <div class="d-flex justify-content-between">
-        <span>Inversión Inicial:</span>
+        <span>{{ t('capitalInicial') }}</span>
         <strong>$ {{ formatear(datosCalculadosFCI.montoInicial.toFixed(2)) }}</strong>
       </div>
       <div class="d-flex justify-content-between text-success">
-        <span>Intereses Ganados ({{ datosCalculadosFCI.plazo }} días):</span>
-        <strong>+ $ {{ formatear(datosCalculadosFCI.totalIntereses.toFixed(2)) }}</strong>
+        <span>{{ t('interesesGanadosConPlazo') }} ({{ datosCalculadosFCI.plazo }} {{ t('dias') }}):</span>
+        <strong>+ $ {{ formatear(datosCalculadosFCI.totalIntereses) }}</strong>
       </div>
       <hr>
-      <div class="d-flex justify-content-between h4 mt-2 p-2 bg-white rounded shadow-sm">
-        <span>TOTAL ESTIMADO:</span>
+      <div class="d-flex justify-content-between h4 mt-2 p-2 rounded shadow-sm">
+        <span>{{ t('total') }}</span>
         <strong class="text-primary">$ {{ formatear(montoFinalFCI.toFixed(2)) }}</strong>
       </div>
-      <p class="small text-muted mt-2">
-        * El interés de los FCI varía diariamente. Este cálculo es una estimación basada en la TNA ingresada.
+      <p class="small mt-2">
+        {{ t('notaFci') }}
       </p>
     </div>
   </section>
 
 </template>
-
-<style>
-/* Tus imports están perfectos */
-@import './assets/css/main.css';
-@import './assets/css/buttons.css';
-@import './assets/css/containers.css';
-/* Tip: Asegúrate de que el path sea correcto (añadiendo ./) */
-</style>

@@ -19,14 +19,17 @@ td {
     position: absolute;
     right: -5px;
 }
-.text-Extra{
+
+.text-Extra {
     color: #4caf4fcb;
     top: -1px;
 }
-.text-Descontar{
+
+.text-Descontar {
     color: #f44336cb;
     bottom: -1px;
 }
+
 .disabled {
     display: none;
 }
@@ -41,8 +44,14 @@ span {
 }
 
 span {
-   min-width: 140px;
-   overflow: hidden;
-   text-overflow: ellipsis;
-   white-space: nowrap;
+    min-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.small {
+    margin-top: 30px !important;
+    color: #6b6a6a;
+    font-size: 11px;
 }

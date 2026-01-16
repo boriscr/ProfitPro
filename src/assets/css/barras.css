@@ -1,7 +1,7 @@
 /* Estilo Tarjeta iOS */
 .card-ios {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px); /* Efecto cristal de iOS */
+  backdrop-filter: blur(10px);
+  /* Efecto cristal de iOS */
   border-radius: 20px;
   padding: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
@@ -11,12 +11,10 @@
 .title-ios {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #1c1c1e;
   text-align: center;
 }
 
 .subtitle-ios {
-  color: #8e8e93;
   font-size: 0.9rem;
 }
 
@@ -32,11 +30,27 @@
 .progress-bar-ios {
   height: 100%;
   border-radius: 10px;
-  transition: width 0.8s cubic-bezier(0.1, 0.7, 1.0, 0.1); /* Animación suave */
+  transition: width 0.8s cubic-bezier(0.1, 0.7, 1.0, 0.1);
+  /* Animación suave */
 }
 
-.pf-color { background: linear-gradient(90deg, #007aff, #5856d6); } /* Azul iOS */
-.fci-color { background: linear-gradient(90deg, #34c759, #30b0c7); } /* Verde iOS */
+.pf-color {
+  background: linear-gradient(90deg, #007aff, #5856d6);
+}
 
-.label-chart { font-weight: 600; color: #3a3a3c; font-size: 0.85rem; }
-.value-chart { font-weight: 700; color: #1c1c1e; font-size: 0.85rem; }
+/* Azul iOS */
+.fci-color {
+  background: linear-gradient(90deg, #34c759, #30b0c7);
+}
+
+/* Verde iOS */
+
+.label-chart {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.value-chart {
+  font-weight: 700;
+  font-size: 0.85rem;
+}

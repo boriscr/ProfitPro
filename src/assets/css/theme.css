@@ -1,0 +1,76 @@
+/* Tus estilos CSS deben depender de la clase en el HTML */
+:root {
+    --bg-color: #f2f2f2;
+    --text-color: #191919;
+    --bg-color-card: #ffffff;
+    --bg-color-item: linear-gradient(to right, #dae9f6, #f5f4f4);
+    --text-color-input: #2a2a2a;
+}
+
+:root.dark {
+    --bg-color: #171717;
+    --text-color: #ffffff;
+    --bg-color-card: #1c1c1d;
+    --bg-color-item: linear-gradient(to right, #1e1f24, #1f1f20);
+    --text-color-input: #eceaea;
+}
+
+body {
+    background-color: var(--bg-color) !important;
+    color: var(--text-color);
+    transition: background-color 0.3s ease;
+}
+
+.theme-btn {
+    color: var(--text-color);
+}
+
+.containerTitles,
+.containerInputs,
+.item i,
+.containerTable,
+.containerTotal,
+.containerTotalDetails {
+    background-color: var(--bg-color-card);
+
+}
+
+.containerTitles,
+.containerInputs,
+.subContainerTotal {
+    color: var(--text-color);
+
+}
+
+.item {
+    background: var(--bg-color-item);
+}
+
+.containerInputs input {
+    color: var(--text-color-input);
+}
+
+.card-ios {
+    background-color: var(--bg-color-card);
+}
+
+.title-ios {
+    color: var(--text-color);
+}
+
+.subtitle-ios {
+    color: #767682;
+}
+
+.label-chart {
+    color: #787880;
+}
+
+.value-chart {
+    color: #7f7f8b;
+}
+
+#table-color {
+    --bs-table-bg: var(--bg-color-card);
+    --bs-table-color: var(--text-color);
+}
