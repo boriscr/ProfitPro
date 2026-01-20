@@ -25,7 +25,10 @@ export function usePlazoFijo() {
         let acumuladoIntereses = 0;
         let acumuladoExtra = 0;
         let acumuladoDescontar = 0;
-        const tasaMensual = ((interesPlazoFijo.value || 0) / 100) / 12;
+
+        // Ajuste: El interés bancario se calcula sobre base 365. 
+        // 1 mes se estima en 30 días para la comparativa.
+        const tasaMensual = ((interesPlazoFijo.value || 0) / 100) * (30 / 365);
 
         const plazo = plazoPlazoFijo.value || 0;
         const extra = montoExtra.value || 0;
@@ -64,6 +67,24 @@ export function usePlazoFijo() {
         }
     };
 
+    const reset = () => {
+        montoPlazoFijo.value = 0;
+        plazoPlazoFijo.value = 0;
+        interesPlazoFijo.value = 0;
+        montoExtra.value = 0;
+        montoDescontar.value = 0;
+        resultadosTabla.value = [];
+        datosCalculados.value = {
+            montoInicial: 0,
+            plazo: 0,
+            totalIntereses: 0,
+            totalInvertidoExtra: 0,
+            totalDescontado: 0,
+            montoDescontar: 0,
+            montoExtra: 0
+        };
+    };
+
     return {
         montoPlazoFijo,
         plazoPlazoFijo,
@@ -73,6 +94,7 @@ export function usePlazoFijo() {
         resultadosTabla,
         tablaRef,
         datosCalculados,
-        calcularPlazoFijo
+        calcularPlazoFijo,
+        reset
     };
 }

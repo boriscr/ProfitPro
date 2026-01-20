@@ -107,8 +107,11 @@ const { formatear } = useFormatters();
             <strong class="text-primary">$ {{ formatear(montoFinal.toFixed(2)) }}</strong>
         </div>
 
+        <hr>
         <p class="small mt-2">
             {{ t('nota1') }}
+            <br>
+            {{ t('notaPlazoFijoBase') }}
         </p>
     </div>
 </template>

@@ -27,7 +27,8 @@ const {
   resultadosTabla,
   datosCalculados,
   calcularPlazoFijo,
-  tablaRef // We need to bind this to the result component for scrolling
+  tablaRef,
+  reset: resetPF
 } = usePlazoFijo();
 
 const {
@@ -37,8 +38,15 @@ const {
   resultadosTablaFCI,
   datosCalculadosFCI,
   calcularFCI,
-  tablaFCIRef
+  tablaFCIRef,
+  reset: resetFCI
 } = useFCI();
+
+// Global Reset
+const handleResetCalculations = () => {
+  resetPF();
+  resetFCI();
+};
 
 // Compare logic depends on the calculated data objects
 const {
@@ -72,9 +80,17 @@ const {
   </section>
 
   <!--Graficos de comparacion-->
-  <section v-if="ambosCalculados" class="containerCompare mt-5 px-3">
+  <section v-if="ambosCalculados" class="containerCompare mt-5 px-3 mb-5">
     <ComparisonChart :ganador="ganador" :diferencia="diferencia" :datosPF="datosCalculados"
       :datosFCI="datosCalculadosFCI" :porcentajePF="porcentajePF" :porcentajeFCI="porcentajeFCI" />
+
+    <!-- Botón Global de Limpiar -->
+    <div class="text-center mt-4 pb-4">
+      <button @click="handleResetCalculations" class="ios-reset-btn">
+        <i class="bi bi-trash3 me-2"></i>
+        {{ t('limpiar') }}
+      </button>
+    </div>
   </section>
 
   <!-- Resultado Plazo Fijo -->

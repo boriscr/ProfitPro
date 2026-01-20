@@ -20,11 +20,24 @@ const emit = defineEmits([
 ]);
 
 const { t } = useLanguage();
-const { formatearParaInput, formatearInputGenerico } = useFormatters();
+const { formatearParaInput, formatearDecimalParaInput } = useFormatters();
 
 const handleMontoInput = (e) => {
     let val = e.target.value.replace(/\D/g, "");
     emit('update:monto', val ? parseInt(val) : "");
+};
+
+const handlePlazoInput = (e) => {
+    let val = e.target.value.replace(/\D/g, "");
+    emit('update:plazo', val ? parseInt(val) : "");
+};
+
+const handleInteresInput = (e) => {
+    // Permitimos decimales para el interés
+    let val = e.target.value.replace(/[^0-9.,]/g, "").replace(/,/g, ".");
+    const points = val.split(".");
+    if (points.length > 2) val = points[0] + "." + points.slice(1).join("");
+    emit('update:interes', val);
 };
 
 const handleExtraInput = (e) => {
@@ -51,16 +64,16 @@ const handleDescontarInput = (e) => {
                 <label>{{ t('plazo') }}</label>
                 <div class="item">
                     <i class="bi bi-calendar"></i>
-                    <input type="number" :placeholder="t('placeholderEjMeses')"
-                        :value="plazo" @input="$emit('update:plazo', $event.target.value)">
+                    <input type="text" inputmode="numeric" :placeholder="t('placeholderEjMeses')" maxlength="4"
+                        pattern="[0-9]*" :value="formatearParaInput(plazo)" @input="handlePlazoInput">
                 </div>
             </div>
             <div class="subContainerInputs">
                 <label>{{ t('interesAnual') }}</label>
                 <div class="item">
                     <i class="bi bi-percent"></i>
-                    <input type="number" :placeholder="t('placeholderEjInteres')"
-                        :value="interes" @input="$emit('update:interes', $event.target.value)">
+                    <input type="text" inputmode="decimal" :placeholder="t('placeholderEjInteres')" maxlength="6"
+                        :value="formatearDecimalParaInput(interes)" @input="handleInteresInput">
                 </div>
             </div>
         </div>

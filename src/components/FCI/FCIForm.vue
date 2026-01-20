@@ -16,11 +16,23 @@ const emit = defineEmits([
 ]);
 
 const { t } = useLanguage();
-const { formatearParaInput } = useFormatters();
+const { formatearParaInput, formatearDecimalParaInput } = useFormatters();
 
 const handleMontoInput = (e) => {
     let val = e.target.value.replace(/\D/g, "");
     emit('update:monto', val ? parseInt(val) : "");
+};
+
+const handlePlazoInput = (e) => {
+    let val = e.target.value.replace(/\D/g, "");
+    emit('update:plazo', val ? parseInt(val) : "");
+};
+
+const handleInteresInput = (e) => {
+    let val = e.target.value.replace(/[^0-9.,]/g, "").replace(/,/g, ".");
+    const points = val.split(".");
+    if (points.length > 2) val = points[0] + "." + points.slice(1).join("");
+    emit('update:interes', val);
 };
 </script>
 
@@ -37,7 +49,7 @@ const handleMontoInput = (e) => {
                 <label>{{ t('plazoDias') }}</label>
                 <div class="item">
                     <i class="bi bi-calendar"></i>
-                    <input type="number" :value="plazo" @input="$emit('update:plazo', $event.target.value)"
+                    <input type="text" inputmode="numeric" :value="formatearParaInput(plazo)" @input="handlePlazoInput"
                         :placeholder="t('placeholderEjDias')" maxlength="4" pattern="[0-9]*">
                 </div>
             </div>
@@ -45,8 +57,8 @@ const handleMontoInput = (e) => {
                 <label>{{ t('interesAnual') }}</label>
                 <div class="item">
                     <i class="bi bi-percent"></i>
-                    <input type="number" :value="interes" @input="$emit('update:interes', $event.target.value)"
-                        :placeholder="t('placeholderEjInteres')" maxlength="4" pattern="[0-9]*">
+                    <input type="text" inputmode="decimal" :value="formatearDecimalParaInput(interes)"
+                        @input="handleInteresInput" :placeholder="t('placeholderEjInteres')" maxlength="6">
                 </div>
             </div>
         </div>

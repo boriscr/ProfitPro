@@ -50,6 +50,18 @@ export function useFCI() {
         }
     };
 
+    const reset = () => {
+        montoFCI.value = 0;
+        plazoFCI.value = 0;
+        interesFCI.value = 0;
+        resultadosTablaFCI.value = [];
+        datosCalculadosFCI.value = {
+            montoInicial: 0,
+            plazo: 0,
+            totalIntereses: 0
+        };
+    };
+
     return {
         montoFCI,
         plazoFCI,
@@ -57,6 +69,7 @@ export function useFCI() {
         resultadosTablaFCI,
         tablaFCIRef,
         datosCalculadosFCI,
-        calcularFCI
+        calcularFCI,
+        reset
     };
 }
