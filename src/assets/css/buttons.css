@@ -1,7 +1,7 @@
 .colorDefault,
 .colorActive,
 .colorBtnPrimary {
-  padding: 15px 32px;
+  padding: 15px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -11,7 +11,7 @@
 
 .theme-btn {
   padding: 10px 20px;
-  border-radius: 20px;
+  border-radius: 25px;
   border: none;
   cursor: pointer;
   border: 1px solid #97979788;
@@ -23,8 +23,7 @@
   background-color: transparent;
   color: #4CAF50;
   border: none;
-  border-radius: 25px;
-  width: 100px;
+  width: 50%;
 }
 
 .colorActive {
@@ -32,9 +31,7 @@
   border: none;
   color: white;
   border-radius: 25px;
-  width: 130px;
-  margin-left: 5px;
-  margin-right: 5px;
+  width: 50%;
 }
 
 .colorBtnPrimary {
@@ -42,10 +39,3 @@
   color: white;
   width: 100%;
 }
-
-/*
-@media (prefers-color-scheme: dark) {
-  .colorActive {
-    background-color: transparent;
-  }
-}*/
